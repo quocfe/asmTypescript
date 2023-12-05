@@ -1,0 +1,58 @@
+.memory-card {
+	height: 190px;
+	cursor: pointer;
+	margin-bottom: 20px;
+	perspective: 1000px;
+}
+
+.card-inner {
+	width: 100%;
+	height: 100%;
+	transform-style: preserve-3d;
+	transition: transform 0.5s;
+}
+
+.card-inner.flip {
+	transform: rotateY(180deg);
+}
+
+.card-inner .card-face {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	backface-visibility: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1.5em;
+}
+
+.card-front,
+.card-back {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.card-front {
+	background-color: #262626;
+	transform: rotateY(0deg);
+}
+
+.card-front::before {
+	content: '?';
+	color: #fff;
+	font-size: 140px;
+	font-weight: 700;
+}
+
+.card-back {
+	background-color: #262626 !important;
+	transform: rotateY(180deg);
+}
+
+.card-back img {
+	width: 60%;
+	height: 60%;
+	object-fit: cover;
+}
