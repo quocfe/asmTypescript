@@ -1,22 +1,36 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect, ChangeEvent } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import ModalCustomType from '../../types/Modal';
+import { ModalCustomType } from '../../types/Modal';
 import { useNameStore } from '../../zustand/store';
 import './Modal.css';
 
 function ModalCustom(props: ModalCustomType) {
 	const [show, setShow] = useState(true);
-	const { button, type, heading } = props;
+	const { button, type, message, heading, error } = props;
 	const { updateName } = useNameStore();
 	const [inputValue, setInputValue] = useState('');
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		updateName(inputValue);
-		setShow(false);
+		if (inputValue === '') {
+			alert('enter your name');
+		} else {
+			updateName(inputValue);
+			setShow(false);
+		}
 	};
+
+	const handlePlayAgain = () => {
+		window.location.reload();
+	};
+
+	useEffect(() => {
+		if (error) {
+			setShow(true);
+		}
+	}, [error]);
 
 	return (
 		<Modal show={show}>
@@ -33,6 +47,7 @@ function ModalCustom(props: ModalCustomType) {
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
 							/>
+							<Form.Label className="mt-3">{message ? message : ''}</Form.Label>
 						</Form.Group>
 						<Button className="btn-handle" type="submit">
 							{button}
@@ -40,7 +55,17 @@ function ModalCustom(props: ModalCustomType) {
 					</Form>
 				</Modal.Body>
 			) : (
-				<Modal.Body>....</Modal.Body>
+				<Modal.Body>
+					<Form action="" onSubmit={handlePlayAgain}>
+						<Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+							<Form.Label>{message ? message : ''}</Form.Label>
+						</Form.Group>
+
+						<Button className="btn-handle" type="submit">
+							{button}
+						</Button>
+					</Form>
+				</Modal.Body>
 			)}
 		</Modal>
 	);

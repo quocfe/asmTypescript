@@ -7,13 +7,23 @@ import { data } from './helper/data';
 import { shuffle } from './helper/shuffle';
 import { useNameStore, useRetryStore, useScoreStore } from './zustand/store';
 import { ArrayData } from './types/Modal';
+import { sound } from './helper/sound';
 
 function App() {
 	const { name } = useNameStore();
 	const { retry, updateRetry } = useRetryStore();
 	const { score, updateScore } = useScoreStore();
+	const [win, setWin] = useState(false);
 	const [openedCards, setOpenedCards] = useState<HTMLDivElement[]>([]);
 	const [dataCard, setDataCard] = useState<ArrayData[]>([]);
+
+	useEffect(() => {
+		if (score === data.length) {
+			setWin(true);
+		} else {
+			setWin(false);
+		}
+	}, [score]);
 
 	useEffect(() => {
 		const shuffledData = shuffle(data);
@@ -21,13 +31,19 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		if (openedCards.length === 2) {
-			updateRetry(retry);
+		if (openedCards.length === 1) {
+			const [firstCard] = openedCards;
+			firstCard.classList.add('pe-none');
+		} else if (openedCards.length === 2) {
 			const [firstCard, secondCard] = openedCards;
+			firstCard.classList.remove('pe-none');
+			updateRetry(retry);
 			if (firstCard.dataset.id === secondCard.dataset.id) {
 				setOpenedCards([]);
 				updateScore(score);
+				sound.success();
 			} else {
+				sound.fail();
 				setTimeout(() => {
 					firstCard.classList.remove('flip');
 					secondCard.classList.remove('flip');
@@ -36,17 +52,6 @@ function App() {
 			}
 		}
 	}, [openedCards]);
-
-	function resetGame() {
-		// updateRetry(0);
-		// updateScore(0);
-		console.log('reset');
-	}
-
-	if (retry === 2) {
-		setTimeout(() => {}, 100);
-		resetGame();
-	}
 
 	function handleCardClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		const cardInner = e.currentTarget;
@@ -61,14 +66,58 @@ function App() {
 		}
 	}
 
+	function checkModel(): JSX.Element | null {
+		if (retry === 15 && win) {
+			console.log('win 1');
+			return (
+				<ModalCustom
+					type={'win'}
+					message={':)))'}
+					button={'Play again'}
+					heading={'You win'}
+					error={true}
+				/>
+			);
+		} else if (win) {
+			console.log('win 2');
+			return (
+				<ModalCustom
+					type={'win'}
+					message={':)))'}
+					button={'Play again'}
+					heading={'You win'}
+					error={true}
+				/>
+			);
+		} else if (retry === 15 && !win) {
+			console.log('lose');
+			return (
+				<ModalCustom
+					type={'lose'}
+					message={':((('}
+					button={'Play again'}
+					heading={'You lose'}
+					error={true}
+				/>
+			);
+		} else {
+			return (
+				<ModalCustom
+					type={'login'}
+					message={''}
+					button={'Play Game'}
+					heading={'Enter your name'}
+					error={false}
+				/>
+			);
+		}
+	}
+
 	return (
 		<div className="container">
-			<ModalCustom
-				type={'login'}
-				message={'undefined'}
-				button={'Play Game'}
-				heading={'Enter your name'}
-			/>
+			{checkModel()}
+
+			<audio controls id="audio" className="d-none"></audio>
 			<h3 className="text-center">Memory game</h3>
 			<div className="row mt-5" id="header">
 				<div className="col-lg-4">{name ? name : 'Username'}</div>
