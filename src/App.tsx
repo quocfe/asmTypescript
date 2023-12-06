@@ -14,16 +14,27 @@ function App() {
 	const { retry, updateRetry } = useRetryStore();
 	const { score, updateScore } = useScoreStore();
 	const [win, setWin] = useState(false);
+	const [lose, setLose] = useState(false);
 	const [openedCards, setOpenedCards] = useState<HTMLDivElement[]>([]);
 	const [dataCard, setDataCard] = useState<ArrayData[]>([]);
 
 	useEffect(() => {
 		if (score === data.length) {
 			setWin(true);
+			setLose(false);
 		} else {
 			setWin(false);
+			setLose(true);
 		}
 	}, [score]);
+
+	useEffect(() => {
+		if (win && retry <= 15) {
+			sound.successEnd();
+		} else if (lose && retry === 15) {
+			sound.failEnd();
+		}
+	}, [win, lose, retry]);
 
 	useEffect(() => {
 		const shuffledData = shuffle(data);
@@ -68,7 +79,6 @@ function App() {
 
 	function checkModel(): JSX.Element | null {
 		if (retry === 15 && win) {
-			console.log('win 1');
 			return (
 				<ModalCustom
 					type={'win'}
@@ -79,7 +89,6 @@ function App() {
 				/>
 			);
 		} else if (win) {
-			console.log('win 2');
 			return (
 				<ModalCustom
 					type={'win'}
@@ -89,8 +98,7 @@ function App() {
 					error={true}
 				/>
 			);
-		} else if (retry === 15 && !win) {
-			console.log('lose');
+		} else if (retry === 15 && lose) {
 			return (
 				<ModalCustom
 					type={'lose'}
@@ -104,9 +112,9 @@ function App() {
 			return (
 				<ModalCustom
 					type={'login'}
-					message={''}
-					button={'Play Game'}
-					heading={'Enter your name'}
+					message={'Bạn có 15 lần chọn, chọn cho đúng nhé :))'}
+					button={'Chơi chơi'}
+					heading={'Bạn tên gì á??'}
 					error={false}
 				/>
 			);

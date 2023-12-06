@@ -43,7 +43,7 @@ function ModalCustom(props: ModalCustomType) {
 						<Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
 							<Form.Control
 								type="text"
-								placeholder="Username"
+								placeholder="Nhập tên ở đây@@"
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
 							/>
