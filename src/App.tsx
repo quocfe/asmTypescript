@@ -44,10 +44,10 @@ function App() {
 	useEffect(() => {
 		if (openedCards.length === 1) {
 			const [firstCard] = openedCards;
-			firstCard.classList.add('pe-none');
+			firstCard.classList.add('check');
 		} else if (openedCards.length === 2) {
 			const [firstCard, secondCard] = openedCards;
-			firstCard.classList.remove('pe-none');
+			firstCard.classList.remove('check');
 			updateRetry(retry);
 			if (firstCard.dataset.id === secondCard.dataset.id) {
 				setOpenedCards([]);
